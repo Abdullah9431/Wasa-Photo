@@ -1,0 +1,352 @@
+openapi: 3.0.3
+info:
+  title: Simplified user API specification
+  description: This openapi document describes user API.
+  version: "1"
+servers:
+- url: /
+paths:
+  /session:
+    post:
+      tags:
+      - login
+      summary: Logs in the user
+      description: |-
+        If the user does not exist, it will be created,
+        and an identifier is returned.
+        If the user exists, the user identifier is returned.
+      operationId: doLogin
+      requestBody:
+        description: User details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/session_body'
+        required: true
+      responses:
+        "201":
+          description: User log-in action successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_201'
+  /:
+    get:
+      tags:
+      - home
+      summary: Home page
+      description: This is the feed for authenticated users.
+      operationId: getMyStream
+      responses:
+        "200":
+          description: Feed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/inline_response_200'
+                x-content-type: application/json
+  /users:
+    get:
+      tags:
+      - user
+      summary: Get all users
+      operationId: getUsers
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/inline_response_200'
+                x-content-type: application/json
+  /users/{username}:
+    get:
+      tags:
+      - user_profile
+      summary: Get user profile
+      operationId: getUserProfile
+      parameters:
+      - name: username
+        in: path
+        description: Name of the user
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: Sami
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+        "404":
+          description: User not found
+  /users/{username}/follow:
+    post:
+      tags:
+      - follow_user
+      description: Follow a user
+      operationId: followUser
+      parameters:
+      - name: username
+        in: path
+        description: Name of the user
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: Hasan
+      responses:
+        "200":
+          description: User followed successfully
+        "404":
+          description: User not found
+    delete:
+      tags:
+      - unfollow_user
+      description: Unfollow a user
+      operationId: unfollowUser
+      parameters:
+      - name: username
+        in: path
+        description: Name of the user
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: Hasan
+      responses:
+        "200":
+          description: User unfollowed successfully
+        "404":
+          description: User not found
+  /users/{username}/ban:
+    post:
+      tags:
+      - ban_user
+      description: Ban a user
+      operationId: banUser
+      parameters:
+      - name: username
+        in: path
+        description: Name of the user
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: Hasan
+      responses:
+        "200":
+          description: User banned successfully
+        "404":
+          description: User not found
+    delete:
+      tags:
+      - unban_user
+      description: Unban a user
+      operationId: unbanUser
+      parameters:
+      - name: username
+        in: path
+        description: Name of the user
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: Hasan
+      responses:
+        "200":
+          description: User unbanned successfully
+        "404":
+          description: User not found
+  /myProfile:
+    put:
+      tags:
+      - setMyUser_name
+      description: Set my user name
+      operationId: setMyUserName
+      responses:
+        "200":
+          description: User name set successfully
+        "404":
+          description: User not found
+  /photos:
+    post:
+      tags:
+      - uploadPhoto
+      description: Upload photo
+      operationId: uploadPhoto
+      responses:
+        "201":
+          description: Photo uploaded successfully
+        "400":
+          description: "The request was not compliant with the documentation (eg.\
+            \ missing fields, etc)"
+        "500":
+          description: The server encountered an internal error. Further info in server
+            logs
+  /photos/{id}:
+    put:
+      tags:
+      - unlikePhoto
+      description: Unlike photo
+      operationId: unlikePhoto
+      parameters:
+      - name: id
+        in: path
+        description: Id of the photo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 23
+      responses:
+        "200":
+          description: Photo unliked successfully
+        "404":
+          description: Photo not found
+    post:
+      tags:
+      - likePhoto
+      description: Like photo
+      operationId: likePhoto
+      parameters:
+      - name: id
+        in: path
+        description: Id of the photo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 23
+      responses:
+        "200":
+          description: Photo liked successfully
+        "404":
+          description: Photo not found
+    delete:
+      tags:
+      - deletePhoto
+      description: Delete photo
+      operationId: deletePhoto
+      parameters:
+      - name: id
+        in: path
+        description: Id of the photo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 23
+      responses:
+        "200":
+          description: Photo deleted successfully
+        "404":
+          description: Photo not found
+  /photos/{id}/comments:
+    post:
+      tags:
+      - comment_Photo
+      description: Comment photo
+      operationId: commentPhoto
+      parameters:
+      - name: id
+        in: path
+        description: Id of the photo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 23
+      responses:
+        "201":
+          description: Comment added successfully
+        "404":
+          description: Photo not found
+    delete:
+      tags:
+      - uncomment_Photo
+      description: Uncomment photo
+      operationId: uncommentPhoto
+      parameters:
+      - name: id
+        in: path
+        description: Id of the photo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 23
+      responses:
+        "200":
+          description: Comment removed successfully
+        "404":
+          description: Photo not found
+components:
+  schemas:
+    inline_response_201:
+      type: object
+      properties:
+        identifier:
+          type: string
+          example: abcdef012345
+      example:
+        identifier: abcdef012345
+    inline_response_200_1:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Sami
+        identifier:
+          type: string
+          example: Sami5609
+      example:
+        identifier: Sami5609
+        name: Sami
+    inline_response_200:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Sami
+        identifier:
+          type: string
+          example: sami5609
+      example:
+        identifier: sami5609
+        name: Sami
+    session_body:
+      type: object
+      properties:
+        name:
+          maxLength: 16
+          minLength: 3
+          pattern: ^.*?$
+          type: string
+          example: Sami
+  responses:
+    Unauthorized:
+      description: The access token is missing or it's expired
+    BadRequest:
+      description: "The request was not compliant with the documentation (eg. missing\
+        \ fields, etc)"
+    InternalServerError:
+      description: The server encountered an internal error. Further info in server
+        logs
